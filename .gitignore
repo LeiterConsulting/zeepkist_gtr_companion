@@ -1,0 +1,70 @@
+# Build output
+**/bin/
+**/obj/
+artifacts/
+packages/
+TestResults/
+coverage/
+*.trx
+*.dll
+*.pdb
+*.nupkg
+*.snupkg
+*.zip
+
+# IDE and editor state
+.vs/
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Operating system files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Logs and local runtime data
+*.log
+logs/
+captures/
+dumps/
+
+# Credentials and machine-local configuration
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.p12
+*.pfx
+secrets/
+secrets*.json
+*.local.json
+
+# Internal working material
+.local/
+.private/
+.scratch/
+dev-tests/
+local-tests/
+notes/
+research/
+scratch/
+conversations/
+transcripts/
+prompts/
+
+# The private iOS app is intentionally outside this repository
+ios/
+iOS/
+private-ios-app/
+DerivedData/
+*.swift
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+*.xcuserstate
