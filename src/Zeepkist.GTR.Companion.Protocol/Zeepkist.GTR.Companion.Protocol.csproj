@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <RootNamespace>LeiterConsulting.Zeepkist.GtrCompanion.Protocol</RootNamespace>
+    <AssemblyName>LeiterConsulting.Zeepkist.GtrCompanion.Protocol</AssemblyName>
+    <Description>Versioned local protocol contracts for Zeepkist GTR Companion.</Description>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+
+</Project>

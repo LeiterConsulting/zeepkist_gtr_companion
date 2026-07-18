@@ -14,3 +14,16 @@ release.
 - Documented the proposed local companion architecture and protocol.
 - Added safeguards that keep the private companion app and internal working
   material outside the repository.
+- Added versioned shared protocol contracts and reconnect snapshots.
+- Added a bounded background named-pipe transport that keeps I/O off the game
+  thread and drops events while no hub is connected.
+- Added read-only ZeepSDK events for levels, runs, checkpoints, finishes,
+  crashes, resets, camera changes, and wheel damage.
+- Added an opt-in Windows tray hub restricted to the current Windows user.
+- Added protocol and end-to-end local pipe tests.
+- Changed the loader-facing plugin version to BepInEx-compatible numeric
+  semantic versioning while retaining alpha status as assembly metadata.
+- Added public OpenAPI and AsyncAPI v1 contracts for companion discovery,
+  six-digit device enrollment, and the authenticated live feed.
+- Documented Bonjour discovery, certificate pinning, device-token storage,
+  revocation, and the iOS integration flow.

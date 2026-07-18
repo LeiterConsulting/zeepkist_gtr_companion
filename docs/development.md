@@ -39,6 +39,12 @@ The assembly is written to:
 src\Zeepkist.GTR.Companion\bin\Debug\net472\com.leiterconsulting.zeepkist.gtrcompanion.dll
 ```
 
+The Windows hub is written to:
+
+```text
+src\Zeepkist.GTR.Companion.Hub\bin\Debug\net8.0-windows\Zeepkist.GTR.Companion.Hub.exe
+```
+
 ## Install a development build
 
 Set the game directory once:
@@ -60,17 +66,35 @@ Start a new terminal, then build and install:
 You can also pass `-ZeepkistPath` directly. The script copies the plugin to:
 
 ```text
-<Zeepkist>\BepInEx\plugins\Sideloaded\Plugins\ZeepkistGTRCompanion\
+<Zeepkist>\BepInEx\plugins\ZeepkistGTRCompanion\
 ```
+
+Install and package operations build only the in-game plugin and shared
+protocol, so the Windows hub may remain open during mod development. Running
+`.\scripts\dev.ps1` without those switches builds the complete solution.
 
 Launch Zeepkist and confirm `BepInEx\LogOutput.log` contains:
 
 ```text
-Zeepkist GTR Companion 0.1.0-alpha loaded.
+Zeepkist GTR Companion 0.1.0 loaded.
 ```
 
-The initial scaffold only verifies that the plugin loads. LAN discovery,
-pairing, and event transport will be added incrementally.
+Run the Windows hub executable. On first launch, live companion data is off.
+Select **Enable live companion data on this PC**, then launch or reload
+Zeepkist. The hub should show **Connected** and list local events as they
+occur.
+
+The implemented transport is restricted to the same Windows user. LAN
+discovery, mobile pairing, player identity, GTR requests, and continuous
+telemetry are still disabled.
+
+## Tests
+
+Run all protocol and local transport tests with:
+
+```powershell
+dotnet test .\Zeepkist.GTR.Companion.sln -c Debug
+```
 
 ## Create a Modkist sideload package
 
@@ -82,8 +106,11 @@ The resulting zip is placed beneath `artifacts\` and can be selected through
 Modkist Revamped's sideload interface. Published Modkist/mod.io metadata will
 be added when the plugin is ready for public preview.
 
+The Modkist package contains the in-game plugin and shared protocol assembly.
+The Windows hub will use a separate signed installer.
+
 Do not commit compiled DLLs, BepInEx configuration, captured sessions, logs,
-game files, or the private companion app.
+game files, or proprietary iOS or Android companion app material.
 
 ## Public repository check
 

@@ -4,7 +4,8 @@
     <TargetFramework>net472</TargetFramework>
     <AssemblyName>com.leiterconsulting.zeepkist.gtrcompanion</AssemblyName>
     <RootNamespace>LeiterConsulting.Zeepkist.GtrCompanion</RootNamespace>
-    <Version>0.1.0-alpha</Version>
+    <Version>0.1.0</Version>
+    <InformationalVersion>0.1.0-alpha</InformationalVersion>
     <Product>Zeepkist GTR Companion</Product>
     <Description>Local companion bridge plugin for Zeepkist.</Description>
     <LangVersion>latest</LangVersion>
@@ -24,6 +25,10 @@
     <PackageReference Include="BepInEx.PluginInfoProps" Version="2.1.0" PrivateAssets="all" />
     <PackageReference Include="Zeepkist.GameLibs" Version="17.32.1912" PrivateAssets="all" />
     <PackageReference Include="ZeepSDK" Version="2.6.1" PrivateAssets="all" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Zeepkist.GTR.Companion.Protocol\Zeepkist.GTR.Companion.Protocol.csproj" />
   </ItemGroup>
 
   <ItemGroup Condition="'$(TargetFramework.TrimEnd(`0123456789`))' == 'net'">

@@ -5,8 +5,8 @@ set -euo pipefail
 repository_root="$(git rev-parse --show-toplevel)"
 cd "$repository_root"
 
-blocked_path_pattern='(^|/)(ios|private-ios-app|\.private|\.local|\.scratch|dev-tests|local-tests|notes|research|scratch|conversations|transcripts|prompts|secrets|captures|dumps)(/|$)'
-blocked_file_pattern='(\.swift$|\.xcodeproj(/|$)|\.xcworkspace(/|$)|\.xcuserstate$|(^|/)\.env($|\.)|\.p12$|\.pfx$|\.pem$|\.key$|secrets[^/]*\.json$)'
+blocked_path_pattern='(^|/)(ios|android|(private-)?ios-app|(private-)?android-app|\.private|\.local|\.scratch|dev-tests|local-tests|notes|research|scratch|conversations|transcripts|prompts|secrets|captures|dumps)(/|$)'
+blocked_file_pattern='(\.xcodeproj(/|$)|\.xcworkspace(/|$)|\.xcuserstate$|\.mobileprovision$|\.keystore$|\.jks$|(^|/)(key|local)\.properties$|(^|/)google-services\.json$|(^|/)google-service-info\.plist$|(^|/)\.env($|\.)|\.p12$|\.pfx$|\.pem$|\.key$|secrets[^/]*\.json$)'
 
 failed=0
 

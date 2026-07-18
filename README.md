@@ -1,11 +1,14 @@
 # Zeepkist GTR Companion
 
 Zeepkist GTR Companion is an independent community project that connects
-Zeepkist to a companion device on the same local network.
+Zeepkist to a local Windows companion hub and, after explicit pairing, to
+companion devices on the same local network.
 
-This repository contains the public Zeepkist plugin and its public
-documentation. The companion app is distributed separately and its source code
-is not part of this repository.
+This repository contains the public Zeepkist plugin, protocol, and
+documentation. The official iOS companion app is a separate proprietary paid
+product distributed through the Apple App Store, and its source code is not
+part of this repository. Any future official Android app will follow the same
+separate paid-product boundary.
 
 ## Project status
 
@@ -13,8 +16,10 @@ The project is in early development. There is not yet a public plugin release.
 
 The first planned version will:
 
-- identify the local Zeepkist player by Steam ID;
-- advertise the running game to paired companion devices on the local network;
+- observe supported ZeepSDK events without changing gameplay;
+- send live events to a same-user Windows hub through local IPC;
+- optionally identify the local Zeepkist player by Steam ID after consent;
+- let the Windows hub advertise to explicitly paired companion devices;
 - stream current level, run state, timing, split, and telemetry events;
 - keep game authentication credentials on the PC; and
 - complement the public GTR record history available through
@@ -23,9 +28,9 @@ The first planned version will:
 ## How it fits together
 
 ```text
-GTR GraphQL API ──────────────────────────┐
-                                         ├── Companion app
-Zeepkist → Companion plugin → Local LAN ──┘
+GTR GraphQL API ────────────────────────┐
+                                       ├── Windows Companion Hub ──► Paired apps
+Zeepkist ──► Companion plugin ──local───┘
 ```
 
 The GTR GraphQL API supplies durable information such as players, levels,
@@ -33,7 +38,9 @@ personal bests, records, and world records. This plugin supplies live,
 session-only information directly from the running game.
 
 See [Architecture](docs/architecture.md) and
-[Companion protocol](docs/protocol.md) for the current design.
+[Companion protocol](docs/protocol.md) for the current design. Companion client
+developers can use the public [API v1 contracts](contracts/v1/README.md),
+[pairing flow](docs/pairing.md), and [iOS integration guide](docs/ios-integration.md).
 
 ## Building
 
@@ -51,7 +58,8 @@ terminal:
 .\scripts\dev.ps1 -Configuration Debug
 ```
 
-To build and copy the plugin into Modkist's sideload directory:
+To build and copy the plugin directly into Zeepkist's BepInEx plugins
+directory:
 
 ```powershell
 .\scripts\dev.ps1 -Install -ZeepkistPath "C:\Program Files (x86)\Steam\steamapps\common\Zeepkist"
@@ -60,6 +68,12 @@ To build and copy the plugin into Modkist's sideload directory:
 The script also accepts `ZEEPKIST_PATH` as an environment variable. Pass
 `-Package -Configuration Release` to create a sideloadable zip beneath
 `artifacts\`.
+
+The Windows hub is built to:
+
+```text
+src\Zeepkist.GTR.Companion.Hub\bin\Debug\net8.0-windows\
+```
 
 More information is available in the
 [development guide](docs/development.md).

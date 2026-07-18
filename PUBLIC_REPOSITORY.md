@@ -3,18 +3,31 @@
 This repository is intentionally limited to material that can be published as
 part of the Zeepkist GTR Companion plugin project.
 
+## Product boundary
+
+The official iOS companion app is a separate, proprietary paid product
+distributed only through the Apple App Store. Its source code, product
+features, project files, assets, store metadata, and signing material do not
+belong in this repository.
+
+Any future official Android companion app will follow the same separate paid
+product boundary. The public protocol remains documented here so the plugin
+and companion products can evolve against a clear, versioned contract.
+
 ## Allowed
 
 - Zeepkist plugin source code
 - Build and release configuration
 - Public protocol specifications
+- Platform-neutral schemas, fixtures, and interoperability documentation
 - Public-facing documentation and installation instructions
 - Contribution, security, and support information
 - Assets that are licensed for public redistribution
 
 ## Not allowed
 
-- Companion app source code or Xcode projects
+- Proprietary iOS or Android app source, feature code, or project files
+- Mobile app product assets, store metadata, signing files, or credentials
 - Credentials, authentication tickets, access tokens, or signing material
 - Personal data, captured gameplay sessions, or local configuration
 - Private planning notes, research dumps, prompts, or conversation transcripts
