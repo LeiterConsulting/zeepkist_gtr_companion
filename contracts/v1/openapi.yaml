@@ -1,0 +1,284 @@
+openapi: 3.1.2
+info:
+  title: Zeepkist GTR Companion Enrollment API
+  version: 0.1.0
+  summary: Enroll a companion device with a Windows hub on the same local network.
+  description: |
+    The Windows user explicitly opens a five-minute pairing window and receives
+    a random six-digit code. A local companion app exchanges that single-use
+    code for a revocable device token. The code is never used as the ongoing
+    feed credential.
+
+    All endpoints use HTTPS. Clients pin the hub certificate fingerprint
+    obtained from the pairing QR code or the selected Bonjour service.
+  contact:
+    name: Leiter Consulting
+    url: https://github.com/LeiterConsulting/zeepkist_gtr_companion
+  license:
+    name: License not yet selected
+    url: https://github.com/LeiterConsulting/zeepkist_gtr_companion
+jsonSchemaDialect: https://json-schema.org/draft/2020-12/schema
+servers:
+  - url: https://{host}:{port}
+    description: Hub selected through Bonjour on the local network.
+    variables:
+      host:
+        default: zeepkist-companion.local
+      port:
+        default: "24817"
+tags:
+  - name: Discovery
+    description: Non-sensitive information needed to identify a selected local hub.
+  - name: Pairing
+    description: Explicitly enroll a device during a short Windows-approved pairing window.
+paths:
+  /v1/status:
+    get:
+      tags:
+        - Discovery
+      operationId: getHubStatus
+      summary: Read non-sensitive hub and pairing status.
+      security: []
+      responses:
+        "200":
+          description: The hub is reachable.
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              description: Always `no-store`.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HubStatus"
+              examples:
+                pairingOpen:
+                  value:
+                    apiVersion: 1
+                    protocolVersion: 1
+                    hubId: 78da1e50-cf4b-4ea8-a620-91cdf40de145
+                    hubName: Zeepkist Companion
+                    pairingAvailable: true
+                    pairingExpiresAt: "2026-07-18T20:05:00Z"
+                    certificateSha256: 879f01d33e0e2a714f49e41d771f88f556aa0b93c24e0939c71486b2237d69dd
+        "426":
+          $ref: "#/components/responses/UpgradeRequired"
+  /v1/pairings:
+    post:
+      tags:
+        - Pairing
+      operationId: enrollDevice
+      summary: Exchange a six-digit pairing code for a device credential.
+      description: |
+        The pairing code must have been explicitly generated in the Windows
+        hub. It is valid for five minutes, is single-use, and is invalidated
+        after five failed attempts. Successful responses must include the
+        `Cache-Control: no-store` header.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/EnrollmentRequest"
+            examples:
+              iPhone:
+                value:
+                  code: "042731"
+                  deviceName: Chris's iPhone
+                  platform: ios
+                  appVersion: 1.0.0
+      responses:
+        "201":
+          description: The device was enrolled and the pairing code was consumed.
+          headers:
+            Cache-Control:
+              schema:
+                type: string
+              description: Always `no-store`.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/EnrollmentResponse"
+              examples:
+                enrolled:
+                  value:
+                    deviceId: eb5d8ea5-b188-44a9-9777-3d75d68ff4dc
+                    deviceToken: 9SfWSm9F7uQnZ6Z2gULJWL7qCccVQy8YT0MDwZQ-uYE
+                    tokenType: Bearer
+                    scopes:
+                      - feed:read
+                    feedUrl: wss://zeepkist-companion.local:24817/v1/feed
+                    certificateSha256: 879f01d33e0e2a714f49e41d771f88f556aa0b93c24e0939c71486b2237d69dd
+        "400":
+          $ref: "#/components/responses/InvalidRequest"
+        "401":
+          $ref: "#/components/responses/InvalidPairingCode"
+        "409":
+          $ref: "#/components/responses/PairingUnavailable"
+        "426":
+          $ref: "#/components/responses/UpgradeRequired"
+        "429":
+          $ref: "#/components/responses/RateLimited"
+components:
+  schemas:
+    HubStatus:
+      type: object
+      additionalProperties: false
+      required:
+        - apiVersion
+        - protocolVersion
+        - hubId
+        - hubName
+        - pairingAvailable
+        - certificateSha256
+      properties:
+        apiVersion:
+          type: integer
+          const: 1
+        protocolVersion:
+          type: integer
+          const: 1
+        hubId:
+          type: string
+          format: uuid
+          description: Random identifier created when the hub is installed.
+        hubName:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: User-visible hub name. It must not contain the Windows username by default.
+        pairingAvailable:
+          type: boolean
+        pairingExpiresAt:
+          type:
+            - string
+            - "null"
+          format: date-time
+        certificateSha256:
+          $ref: "#/components/schemas/CertificateFingerprint"
+    EnrollmentRequest:
+      type: object
+      additionalProperties: false
+      required:
+        - code
+        - deviceName
+        - platform
+        - appVersion
+      properties:
+        code:
+          type: string
+          pattern: "^[0-9]{6}$"
+          description: Preserve leading zeroes; this is never an integer.
+        deviceName:
+          type: string
+          minLength: 1
+          maxLength: 64
+          description: User-visible name shown in the Windows hub device list.
+        platform:
+          type: string
+          enum:
+            - ios
+            - android
+        appVersion:
+          type: string
+          minLength: 1
+          maxLength: 32
+    EnrollmentResponse:
+      type: object
+      additionalProperties: false
+      required:
+        - deviceId
+        - deviceToken
+        - tokenType
+        - scopes
+        - feedUrl
+        - certificateSha256
+      properties:
+        deviceId:
+          type: string
+          format: uuid
+        deviceToken:
+          type: string
+          pattern: "^[A-Za-z0-9_-]{43,}$"
+          description: |
+            At least 256 random bits encoded with base64url without padding.
+            Returned once and valid until the Windows user revokes the device.
+        tokenType:
+          type: string
+          const: Bearer
+        scopes:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            enum:
+              - feed:read
+        feedUrl:
+          type: string
+          format: uri
+          pattern: "^wss://"
+        certificateSha256:
+          $ref: "#/components/schemas/CertificateFingerprint"
+    CertificateFingerprint:
+      type: string
+      pattern: "^[a-f0-9]{64}$"
+      description: Lowercase hexadecimal SHA-256 fingerprint of the hub TLS certificate.
+    Problem:
+      type: object
+      additionalProperties: true
+      required:
+        - type
+        - title
+        - status
+      properties:
+        type:
+          type: string
+          format: uri-reference
+        title:
+          type: string
+        status:
+          type: integer
+          minimum: 400
+          maximum: 599
+        detail:
+          type: string
+        retryAfterSeconds:
+          type: integer
+          minimum: 1
+  responses:
+    InvalidRequest:
+      description: The request body was malformed or failed validation.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    InvalidPairingCode:
+      description: The pairing code was incorrect or expired.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    PairingUnavailable:
+      description: No pairing window is open or the code was already consumed.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    UpgradeRequired:
+      description: The requested API major version is unsupported.
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"
+    RateLimited:
+      description: Too many enrollment attempts were made.
+      headers:
+        Retry-After:
+          schema:
+            type: integer
+            minimum: 1
+      content:
+        application/problem+json:
+          schema:
+            $ref: "#/components/schemas/Problem"

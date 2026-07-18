@@ -58,13 +58,32 @@ conversations/
 transcripts/
 prompts/
 
-# The private iOS app is intentionally outside this repository
-ios/
-iOS/
-private-ios-app/
+# Proprietary paid mobile apps are intentionally outside this repository.
+# Public protocol schemas and documentation belong here; official app source,
+# product features, store assets, and signing material do not.
+/ios/
+/iOS/
+/ios-app/
+/iOS-app/
+/private-ios-app/
+/apps/ios/
+/apps/iOS/
+/android/
+/Android/
+/android-app/
+/Android-app/
+/private-android-app/
+/apps/android/
+/apps/Android/
 DerivedData/
-*.swift
 *.xcodeproj/
 *.xcworkspace/
 xcuserdata/
 *.xcuserstate
+*.mobileprovision
+*.keystore
+*.jks
+key.properties
+local.properties
+GoogleService-Info.plist
+google-services.json

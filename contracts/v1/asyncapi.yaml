@@ -1,0 +1,363 @@
+asyncapi: 3.1.0
+id: https://github.com/LeiterConsulting/zeepkist_gtr_companion/contracts/v1/feed
+info:
+  title: Zeepkist GTR Companion Live Feed
+  version: 0.1.0
+  description: |
+    Read-only live Zeepkist events delivered by an explicitly enabled and
+    paired Windows hub. Clients must ignore unknown fields and may ignore
+    unknown message types.
+  contact:
+    name: Leiter Consulting
+    url: https://github.com/LeiterConsulting/zeepkist_gtr_companion
+defaultContentType: application/json
+servers:
+  localHub:
+    host: "{host}:{port}"
+    pathname: /v1/feed
+    protocol: wss
+    description: Windows hub selected through Bonjour and authenticated with a device token.
+    variables:
+      host:
+        default: zeepkist-companion.local
+      port:
+        default: "24817"
+    security:
+      - $ref: "#/components/securitySchemes/deviceToken"
+channels:
+  liveFeed:
+    address: /v1/feed
+    messages:
+      sessionHello:
+        $ref: "#/components/messages/sessionHello"
+      sessionSnapshot:
+        $ref: "#/components/messages/sessionSnapshot"
+      sessionEnded:
+        $ref: "#/components/messages/sessionEnded"
+      levelLoaded:
+        $ref: "#/components/messages/levelLoaded"
+      playerSpawned:
+        $ref: "#/components/messages/playerSpawned"
+      runStarted:
+        $ref: "#/components/messages/runStarted"
+      runCheckpoint:
+        $ref: "#/components/messages/runCheckpoint"
+      runFinished:
+        $ref: "#/components/messages/runFinished"
+      runCrashed:
+        $ref: "#/components/messages/runCrashed"
+      runReset:
+        $ref: "#/components/messages/runReset"
+      runEnded:
+        $ref: "#/components/messages/runEnded"
+      cameraChanged:
+        $ref: "#/components/messages/cameraChanged"
+      wheelBroken:
+        $ref: "#/components/messages/wheelBroken"
+operations:
+  receiveLiveEvents:
+    action: receive
+    summary: Receive the live read-only event stream from the Windows hub.
+    channel:
+      $ref: "#/channels/liveFeed"
+    messages:
+      - $ref: "#/channels/liveFeed/messages/sessionHello"
+      - $ref: "#/channels/liveFeed/messages/sessionSnapshot"
+      - $ref: "#/channels/liveFeed/messages/sessionEnded"
+      - $ref: "#/channels/liveFeed/messages/levelLoaded"
+      - $ref: "#/channels/liveFeed/messages/playerSpawned"
+      - $ref: "#/channels/liveFeed/messages/runStarted"
+      - $ref: "#/channels/liveFeed/messages/runCheckpoint"
+      - $ref: "#/channels/liveFeed/messages/runFinished"
+      - $ref: "#/channels/liveFeed/messages/runCrashed"
+      - $ref: "#/channels/liveFeed/messages/runReset"
+      - $ref: "#/channels/liveFeed/messages/runEnded"
+      - $ref: "#/channels/liveFeed/messages/cameraChanged"
+      - $ref: "#/channels/liveFeed/messages/wheelBroken"
+components:
+  securitySchemes:
+    deviceToken:
+      type: http
+      scheme: bearer
+      bearerFormat: opaque-device-token
+      description: Device-scoped token returned once by POST /v1/pairings.
+  messages:
+    sessionHello:
+      name: session.hello
+      title: Session hello
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/eventEnvelope"
+          - type: object
+            properties:
+              type:
+                const: session.hello
+              payload:
+                $ref: "#/components/schemas/sessionHelloPayload"
+    sessionSnapshot:
+      name: session.snapshot
+      title: Current session snapshot
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/eventEnvelope"
+          - type: object
+            properties:
+              type:
+                const: session.snapshot
+              payload:
+                $ref: "#/components/schemas/sessionSnapshotPayload"
+    sessionEnded:
+      name: session.ended
+      title: Session ended
+      payload:
+        $ref: "#/components/schemas/emptyEvent"
+    levelLoaded:
+      name: level.loaded
+      title: Level loaded
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/eventEnvelope"
+          - type: object
+            properties:
+              type:
+                const: level.loaded
+              payload:
+                $ref: "#/components/schemas/levelLoadedPayload"
+    playerSpawned:
+      name: run.spawned
+      title: Player spawned
+      payload:
+        $ref: "#/components/schemas/emptyEvent"
+    runStarted:
+      name: run.started
+      title: Run started
+      payload:
+        $ref: "#/components/schemas/emptyEvent"
+    runCheckpoint:
+      name: run.checkpoint
+      title: Checkpoint passed
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/eventEnvelope"
+          - type: object
+            properties:
+              type:
+                const: run.checkpoint
+              payload:
+                $ref: "#/components/schemas/checkpointPayload"
+    runFinished:
+      name: run.finished
+      title: Run finished
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/eventEnvelope"
+          - type: object
+            properties:
+              type:
+                const: run.finished
+              payload:
+                $ref: "#/components/schemas/timedRunPayload"
+    runCrashed:
+      name: run.crashed
+      title: Run crashed
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/eventEnvelope"
+          - type: object
+            properties:
+              type:
+                const: run.crashed
+              payload:
+                $ref: "#/components/schemas/crashPayload"
+    runReset:
+      name: run.reset
+      title: Run reset
+      payload:
+        $ref: "#/components/schemas/emptyEvent"
+    runEnded:
+      name: run.ended
+      title: Round ended
+      payload:
+        $ref: "#/components/schemas/emptyEvent"
+    cameraChanged:
+      name: camera.changed
+      title: Camera changed
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/eventEnvelope"
+          - type: object
+            properties:
+              type:
+                const: camera.changed
+              payload:
+                $ref: "#/components/schemas/cameraChangedPayload"
+    wheelBroken:
+      name: vehicle.wheelBroken
+      title: Wheel broken
+      payload:
+        allOf:
+          - $ref: "#/components/schemas/eventEnvelope"
+          - type: object
+            properties:
+              type:
+                const: vehicle.wheelBroken
+              payload:
+                $ref: "#/components/schemas/wheelBrokenPayload"
+  schemas:
+    eventEnvelope:
+      type: object
+      additionalProperties: true
+      required:
+        - protocolVersion
+        - type
+        - sessionId
+        - sequence
+        - timestamp
+        - payload
+      properties:
+        protocolVersion:
+          type: integer
+          const: 1
+        type:
+          type: string
+          minLength: 1
+        sessionId:
+          type: string
+          pattern: "^[a-f0-9]{32}$"
+        sequence:
+          type: integer
+          format: int64
+          minimum: 1
+        timestamp:
+          type: string
+          format: date-time
+        payload:
+          type: object
+    emptyEvent:
+      allOf:
+        - $ref: "#/components/schemas/eventEnvelope"
+        - type: object
+          properties:
+            payload:
+              type: object
+              maxProperties: 0
+    sessionHelloPayload:
+      type: object
+      additionalProperties: true
+      required:
+        - pluginVersion
+        - game
+        - containsPlayerIdentity
+      properties:
+        pluginVersion:
+          type: string
+        game:
+          const: Zeepkist
+        containsPlayerIdentity:
+          type: boolean
+          const: false
+    sessionSnapshotPayload:
+      type: object
+      additionalProperties: true
+      required:
+        - runState
+        - checkpointCount
+        - cameraMode
+        - brokenWheelCount
+      properties:
+        levelHash:
+          type: string
+        levelHashV2:
+          type: string
+        runState:
+          type: string
+          enum:
+            - unknown
+            - ready
+            - running
+            - finished
+            - crashed
+            - ended
+        checkpointCount:
+          type: integer
+          minimum: 0
+        lastTimeSeconds:
+          type: number
+          format: float
+          minimum: 0
+        cameraMode:
+          type: string
+          enum:
+            - unknown
+            - firstPerson
+            - thirdPerson
+        brokenWheelCount:
+          type: integer
+          minimum: 0
+    levelLoadedPayload:
+      type: object
+      additionalProperties: true
+      properties:
+        levelHash:
+          type: string
+        levelHashV2:
+          type: string
+    checkpointPayload:
+      type: object
+      additionalProperties: true
+      required:
+        - timeSeconds
+        - checkpointNumber
+      properties:
+        timeSeconds:
+          type: number
+          format: float
+          minimum: 0
+        checkpointNumber:
+          type: integer
+          minimum: 1
+    timedRunPayload:
+      type: object
+      additionalProperties: true
+      required:
+        - timeSeconds
+      properties:
+        timeSeconds:
+          type: number
+          format: float
+          minimum: 0
+    crashPayload:
+      type: object
+      additionalProperties: true
+      required:
+        - reason
+      properties:
+        reason:
+          type: string
+          enum:
+            - Unknown
+            - Crashed
+            - Eye
+            - Ghost
+            - Sticky
+            - FoundFootage
+    cameraChangedPayload:
+      type: object
+      additionalProperties: true
+      required:
+        - mode
+      properties:
+        mode:
+          type: string
+          enum:
+            - firstPerson
+            - thirdPerson
+    wheelBrokenPayload:
+      type: object
+      additionalProperties: true
+      required:
+        - brokenWheelCount
+      properties:
+        brokenWheelCount:
+          type: integer
+          minimum: 1

@@ -16,8 +16,8 @@ try {
         throw "Unable to enumerate repository files."
     }
 
-    $blockedPathPattern = '(^|/)(ios|private-ios-app|\.private|\.local|\.scratch|dev-tests|local-tests|notes|research|scratch|conversations|transcripts|prompts|secrets|captures|dumps)(/|$)'
-    $blockedFilePattern = '(\.swift$|\.xcodeproj(/|$)|\.xcworkspace(/|$)|\.xcuserstate$|(^|/)\.env($|\.)|\.p12$|\.pfx$|\.pem$|\.key$|secrets[^/]*\.json$)'
+    $blockedPathPattern = '(^|/)(ios|android|(private-)?ios-app|(private-)?android-app|\.private|\.local|\.scratch|dev-tests|local-tests|notes|research|scratch|conversations|transcripts|prompts|secrets|captures|dumps)(/|$)'
+    $blockedFilePattern = '(\.xcodeproj(/|$)|\.xcworkspace(/|$)|\.xcuserstate$|\.mobileprovision$|\.keystore$|\.jks$|(^|/)(key|local)\.properties$|(^|/)google-services\.json$|(^|/)google-service-info\.plist$|(^|/)\.env($|\.)|\.p12$|\.pfx$|\.pem$|\.key$|secrets[^/]*\.json$)'
     $blockedPaths = @()
 
     foreach ($path in $paths) {
